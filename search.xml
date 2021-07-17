@@ -34,9 +34,9 @@
       </tags>
   </entry>
   <entry>
-    <title>helm</title>
+    <title>Helm应用包管理器</title>
     <url>/2021/07/17/helm/</url>
-    <content><![CDATA[<h2 id="Helm应用包管理器"><a href="#Helm应用包管理器" class="headerlink" title="Helm应用包管理器"></a>Helm应用包管理器</h2><h2 id="一、-为什么需要Helm？"><a href="#一、-为什么需要Helm？" class="headerlink" title="一、 为什么需要Helm？"></a>一、 为什么需要Helm？</h2><p>K8S上的应用对象，都是由特定的资源描述组成，包括deployment、service等。都保存各自文件中或者集中写到一个配置文件。然后kubectl apply –f 部署。</p>
+    <content><![CDATA[<h2 id="为什么需要Helm？"><a href="#为什么需要Helm？" class="headerlink" title="为什么需要Helm？"></a>为什么需要Helm？</h2><p>K8S上的应用对象，都是由特定的资源描述组成，包括deployment、service等。都保存各自文件中或者集中写到一个配置文件。然后kubectl apply –f 部署。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/stupid-yu/cdn/img/md/yaml-all.png"></p>
 <p>如果应用只由一个或几个这样的服务组成，上面部署方式足够了。</p>
 <p>而对于一个复杂的应用，会有很多类似上面的资源描述文件，例如微服务架构应用，组成应用的服务可能多达十个，几十个。如果有更新或回滚应用的需求，可能要修改和维护所涉及的大量资源文件，而这种组织和管理应用的方式就显得力不从心了。</p>
@@ -51,7 +51,7 @@
 </ul>
 <span id="more"></span>
 
-<h2 id="二、-Helm-介绍"><a href="#二、-Helm-介绍" class="headerlink" title="二、 Helm 介绍"></a>二、 Helm 介绍</h2><p>Helm是一个Kubernetes的包管理工具，就像Linux下的包管理器，如yum/apt等，可以很方便的将之前打包好的yaml文件部署到kubernetes上。</p>
+<h2 id="Helm-介绍"><a href="#Helm-介绍" class="headerlink" title="Helm 介绍"></a>Helm 介绍</h2><p>Helm是一个Kubernetes的包管理工具，就像Linux下的包管理器，如yum/apt等，可以很方便的将之前打包好的yaml文件部署到kubernetes上。</p>
 <p>Helm有两个重要概念：</p>
 <ul>
 <li><p><strong>helm：</strong> 一个命令行客户端工具，主要用于Kubernetes应用chart的创建、打包、发布和管理。</p>
@@ -61,11 +61,11 @@
 <li><p><strong>Release：</strong> 基于Chart的部署实体，一个 chart 被 Helm 运行后将会生成对应的一个 release；将在k8s中创建出真实运行的资源对象。</p>
 </li>
 </ul>
-<h2 id="三、-Helm-v3-变化"><a href="#三、-Helm-v3-变化" class="headerlink" title="三、 Helm v3 变化"></a>三、 Helm v3 变化</h2><p><strong>2019年11月13日，</strong> Helm团队发布 <code>Helm v3 </code>的第一个稳定版本。</p>
+<h2 id="Helm-v3-变化"><a href="#Helm-v3-变化" class="headerlink" title="Helm v3 变化"></a>Helm v3 变化</h2><p><strong>2019年11月13日，</strong> Helm团队发布 <code>Helm v3 </code>的第一个稳定版本。</p>
 <p><strong>该版本主要变化如下：</strong></p>
-<h3 id="1、-架构变化"><a href="#1、-架构变化" class="headerlink" title="1、 架构变化"></a>1、 架构变化</h3><p><strong>最明显的变化是 <code>Tiller </code>的删除</strong></p>
+<h3 id="架构变化"><a href="#架构变化" class="headerlink" title="架构变化"></a>架构变化</h3><p><strong>最明显的变化是 <code>Tiller </code>的删除</strong></p>
 <p><img src="https://cdn.jsdelivr.net/gh/stupid-yu/cdn/img/md/helm-arch.png"></p>
-<h3 id="2、Release名称可以在不同命名空间重用"><a href="#2、Release名称可以在不同命名空间重用" class="headerlink" title="2、Release名称可以在不同命名空间重用"></a>2、<code>Release</code>名称可以在不同命名空间重用</h3><h3 id="3、支持将-Chart-推送至-Docker-镜像仓库中"><a href="#3、支持将-Chart-推送至-Docker-镜像仓库中" class="headerlink" title="3、支持将 Chart 推送至 Docker 镜像仓库中"></a>3、支持将 Chart 推送至 Docker 镜像仓库中</h3><h3 id="4、使用JSONSchema验证chart-values"><a href="#4、使用JSONSchema验证chart-values" class="headerlink" title="4、使用JSONSchema验证chart values"></a>4、使用JSONSchema验证chart values</h3><h3 id="5、其他"><a href="#5、其他" class="headerlink" title="5、其他"></a>5、其他</h3><p>1）为了更好地协调其他包管理者的措辞 <code>Helm CLI </code>个别更名</p>
+<h3 id="Release名称可以在不同命名空间重用"><a href="#Release名称可以在不同命名空间重用" class="headerlink" title="Release名称可以在不同命名空间重用"></a><code>Release</code>名称可以在不同命名空间重用</h3><h3 id="支持将-Chart-推送至-Docker-镜像仓库中"><a href="#支持将-Chart-推送至-Docker-镜像仓库中" class="headerlink" title="支持将 Chart 推送至 Docker 镜像仓库中"></a>支持将 Chart 推送至 Docker 镜像仓库中</h3><h3 id="使用JSONSchema验证chart-values"><a href="#使用JSONSchema验证chart-values" class="headerlink" title="使用JSONSchema验证chart values"></a>使用JSONSchema验证chart values</h3><h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>1）为了更好地协调其他包管理者的措辞 <code>Helm CLI </code>个别更名</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">helm delete` 更名为 `helm uninstall</span><br><span class="line">helm inspect` 更名为 `helm show</span><br><span class="line">helm fetch` 更名为 `helm pull</span><br></pre></td></tr></table></figure>
 
 <p>但以上旧的命令当前仍能使用。</p>
@@ -73,11 +73,11 @@
 <p>3）自动创建名称空间</p>
 <p>在不存在的命名空间中创建发行版时，Helm 2创建了命名空间。Helm 3遵循其他Kubernetes对象的行为，如果命名空间不存在则返回错误。</p>
 <p>4） 不再需要<code>requirements.yaml</code>, 依赖关系是直接在<code>chart.yaml</code>中定义。 </p>
-<h2 id="四、-Helm客户端"><a href="#四、-Helm客户端" class="headerlink" title="四、 Helm客户端"></a>四、 Helm客户端</h2><h3 id="1、部署Helm客户端"><a href="#1、部署Helm客户端" class="headerlink" title="1、部署Helm客户端"></a>1、部署Helm客户端</h3><p>Helm客户端下载地址：<a href="https://github.com/helm/helm/releases">https://github.com/helm/helm/releases</a></p>
+<h2 id="Helm客户端"><a href="#Helm客户端" class="headerlink" title="Helm客户端"></a>Helm客户端</h2><h3 id="部署Helm客户端"><a href="#部署Helm客户端" class="headerlink" title="部署Helm客户端"></a>部署Helm客户端</h3><p>Helm客户端下载地址：<a href="https://github.com/helm/helm/releases">https://github.com/helm/helm/releases</a></p>
 <p>解压移动到/usr/bin/目录即可。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#目前最新版 3.6.0</span><br><span class="line">wget https://get.helm.sh/helm-v3.6.0-linux-amd64.tar.gz</span><br><span class="line">tar zxvf helm-v3.6.0-linux-amd64.tar.gz </span><br><span class="line">mv linux-amd64/helm /usr/bin/</span><br></pre></td></tr></table></figure>
 
-<h3 id="2、Helm常用命令"><a href="#2、Helm常用命令" class="headerlink" title="2、Helm常用命令"></a>2、Helm常用命令</h3><table>
+<h3 id="Helm常用命令"><a href="#Helm常用命令" class="headerlink" title="Helm常用命令"></a>Helm常用命令</h3><table>
 <thead>
 <tr>
 <th><strong>命令</strong></th>
@@ -153,7 +153,7 @@
 <td>查看helm客户端版本</td>
 </tr>
 </tbody></table>
-<h3 id="3、配置国内Chart仓库"><a href="#3、配置国内Chart仓库" class="headerlink" title="3、配置国内Chart仓库"></a>3、配置国内Chart仓库</h3><ul>
+<h3 id="配置国内Chart仓库"><a href="#配置国内Chart仓库" class="headerlink" title="配置国内Chart仓库"></a>配置国内Chart仓库</h3><ul>
 <li>微软仓库（<a href="http://mirror.azure.cn/kubernetes/charts/%EF%BC%89%E8%BF%99%E4%B8%AA%E4%BB%93%E5%BA%93%E5%BC%BA%E7%83%88%E6%8E%A8%E8%8D%90%EF%BC%8C%E5%9F%BA%E6%9C%AC%E4%B8%8A%E5%AE%98%E7%BD%91%E6%9C%89%E7%9A%84chart%E8%BF%99%E9%87%8C%E9%83%BD%E6%9C%89%E3%80%82">http://mirror.azure.cn/kubernetes/charts/）这个仓库强烈推荐，基本上官网有的chart这里都有。</a></li>
 <li>阿里云仓库（<a href="https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts">https://kubernetes.oss-cn-hangzhou.aliyuncs.com/charts</a>  ）长时间未更新，版本较旧</li>
 <li>官方仓库（<a href="https://hub.kubeapps.com/charts/incubator%EF%BC%89%E5%AE%98%E6%96%B9chart%E4%BB%93%E5%BA%93%EF%BC%8C%E5%9B%BD%E5%86%85%E6%9C%89%E7%82%B9%E4%B8%8D%E5%A5%BD%E4%BD%BF%E3%80%82">https://hub.kubeapps.com/charts/incubator）官方chart仓库，国内有点不好使。</a></li>
@@ -169,7 +169,7 @@
 <p>删除存储库：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">helm repo remove aliyun</span><br></pre></td></tr></table></figure>
 
-<h2 id="五、-Helm基本使用"><a href="#五、-Helm基本使用" class="headerlink" title="五、 Helm基本使用"></a>五、 Helm基本使用</h2><p>主要介绍三个命令：</p>
+<h2 id="Helm基本使用"><a href="#Helm基本使用" class="headerlink" title="Helm基本使用"></a>Helm基本使用</h2><p>主要介绍三个命令：</p>
 <ul>
 <li><p>chart install</p>
 </li>
@@ -178,7 +178,7 @@
 <li><p>chart rollback</p>
 </li>
 </ul>
-<h3 id="1、使用chart部署一个应用"><a href="#1、使用chart部署一个应用" class="headerlink" title="1、使用chart部署一个应用"></a>1、使用chart部署一个应用</h3><p>查找chart：</p>
+<h3 id="使用chart部署一个应用"><a href="#使用chart部署一个应用" class="headerlink" title="使用chart部署一个应用"></a>使用chart部署一个应用</h3><p>查找chart：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm search repo</span><br><span class="line"># helm search repo mysql</span><br></pre></td></tr></table></figure>
 
 <p>为什么mariadb也在列表中？因为他和mysql有关。</p>
@@ -191,14 +191,14 @@
 <p>查看发布状态：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm status db </span><br></pre></td></tr></table></figure>
 
-<h3 id="2、安装前自定义chart配置选项"><a href="#2、安装前自定义chart配置选项" class="headerlink" title="2、安装前自定义chart配置选项"></a>2、安装前自定义chart配置选项</h3><p>上面部署的mysql并没有成功，这是因为并不是所有的chart都能按照默认配置运行成功，可能会需要一些环境依赖，例如PV。</p>
+<h3 id="安装前自定义chart配置选项"><a href="#安装前自定义chart配置选项" class="headerlink" title="安装前自定义chart配置选项"></a>安装前自定义chart配置选项</h3><p>上面部署的mysql并没有成功，这是因为并不是所有的chart都能按照默认配置运行成功，可能会需要一些环境依赖，例如PV。</p>
 <p>所以我们需要自定义chart配置选项，安装过程中有两种方法可以传递配置数据：</p>
 <ul>
 <li>–values（或-f）：指定带有覆盖的YAML文件。这可以多次指定，最右边的文件优先</li>
 <li>–set：在命令行上指定替代。如果两者都用，–set优先级高</li>
 </ul>
 <p>–values使用，先将修改的变量写到一个文件中</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm show values stable/mysql# cat config.yaml persistence:    enabled: true    storageClass: &quot;managed-nfs-storage&quot;    accessMode: ReadWriteOnce    size: 8Gi  mysqlUser: &quot;k8s&quot;  mysqlPassword: &quot;123456&quot;  mysqlDatabase: &quot;k8s&quot;  # helm install db -f config.yaml stable/mysql# kubectl get podsNAME                             READY   STATUS    RESTARTS   AGEdb-mysql-57485b68dc-4xjhv        1/1     Running   0          8m51s</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm show values stable/mysql</span><br><span class="line"># cat config.yaml </span><br><span class="line">persistence:  </span><br><span class="line">  enabled: true  </span><br><span class="line">  storageClass: &quot;managed-nfs-storage&quot;  </span><br><span class="line">  accessMode: ReadWriteOnce  </span><br><span class="line">  size: 8Gi</span><br><span class="line">  mysqlUser: &quot;k8s&quot;</span><br><span class="line">  mysqlPassword: &quot;123456&quot;</span><br><span class="line">  mysqlDatabase: &quot;k8s&quot;</span><br><span class="line">  </span><br><span class="line"># helm install db -f config.yaml stable/mysql</span><br><span class="line"># kubectl get pods</span><br><span class="line">NAME                             READY   STATUS    RESTARTS   AGE</span><br><span class="line">db-mysql-57485b68dc-4xjhv        1/1     Running   0          8m51s</span><br></pre></td></tr></table></figure>
 
 <p>以上将创建具有名称的默认MySQL用户k8s，并授予此用户访问新创建的k8s数据库的权限，但将接受该图表的所有其余默认值。</p>
 <p>命令行替代变量：</p>
@@ -216,7 +216,7 @@
 <li>chart目录（helm install path/to/foo）</li>
 <li>完整的URL（helm install <a href="https://example.com/charts/foo-1.2.3.tgz%EF%BC%89">https://example.com/charts/foo-1.2.3.tgz）</a></li>
 </ul>
-<h3 id="3、构建一个Helm-Chart"><a href="#3、构建一个Helm-Chart" class="headerlink" title="3、构建一个Helm Chart"></a>3、构建一个Helm Chart</h3><p>自动生成。</p>
+<h3 id="构建一个Helm-Chart"><a href="#构建一个Helm-Chart" class="headerlink" title="构建一个Helm Chart"></a>构建一个Helm Chart</h3><p>自动生成。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm create mychartCreating mychart</span><br><span class="line"># tree mychart/mychart/</span><br><span class="line">├── charts├── Chart.yaml</span><br><span class="line">          ├── templates</span><br><span class="line">          │   ├── deployment.yaml</span><br><span class="line">          │   ├── _helpers.tpl</span><br><span class="line">          │   ├── ingress.yaml</span><br><span class="line">          │   ├── NOTES.txt</span><br><span class="line">          │   └── service.yaml</span><br><span class="line">          └── values.yaml</span><br></pre></td></tr></table></figure>
 
 <ul>
@@ -233,7 +233,7 @@
 <p>也可以打包推送的charts仓库共享别人使用。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm package mychart/mychart-0.1.0.tgz</span><br></pre></td></tr></table></figure>
 
-<h3 id="4、升级、回滚和删除"><a href="#4、升级、回滚和删除" class="headerlink" title="4、升级、回滚和删除"></a>4、升级、回滚和删除</h3><p>发布新版本的chart时，或者当您要更改发布的配置时，可以使用该<code>helm upgrade</code> 命令。</p>
+<h3 id="升级、回滚和删除"><a href="#升级、回滚和删除" class="headerlink" title="升级、回滚和删除"></a>升级、回滚和删除</h3><p>发布新版本的chart时，或者当您要更改发布的配置时，可以使用该<code>helm upgrade</code> 命令。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm upgrade --set imageTag=1.17 web mychart</span><br><span class="line"># helm upgrade -f values.yaml web mychart</span><br></pre></td></tr></table></figure>
 
 <p>如果在发布后没有达到预期的效果，则可以使用<code>helm rollback </code>回滚到之前的版本。</p>
@@ -246,9 +246,9 @@
 <p>查看历史版本配置信息</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm get --revision 1 web</span><br></pre></td></tr></table></figure>
 
-<h2 id="六、-Chart模板"><a href="#六、-Chart模板" class="headerlink" title="六、 Chart模板"></a>六、 Chart模板</h2><p>Helm最核心的就是模板，即模板化的K8S manifests文件。</p>
+<h2 id="Chart模板"><a href="#Chart模板" class="headerlink" title="Chart模板"></a>Chart模板</h2><p>Helm最核心的就是模板，即模板化的K8S manifests文件。</p>
 <p>它本质上就是一个Go的template模板。Helm在Go template模板的基础上，还会增加很多东西。如一些自定义的元数据信息、扩展的库以及一些类似于编程形式的工作流，例如条件语句、管道等等。这些东西都会使得我们的模板变得更加丰富。</p>
-<h3 id="1、模板"><a href="#1、模板" class="headerlink" title="1、模板"></a>1、模板</h3><p>有了模板，我们怎么把我们的配置融入进去呢？用的就是这个values文件。这两部分内容其实就是chart的核心功能。</p>
+<h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><p>有了模板，我们怎么把我们的配置融入进去呢？用的就是这个values文件。这两部分内容其实就是chart的核心功能。</p>
 <p>接下来，部署nginx应用，熟悉模板使用，先把templates 目录下面所有文件全部删除掉，这里我们自己来创建模板文件：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># rm -rf mychart/templates/*</span><br><span class="line"># vi templates/deployment.yaml</span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: nginx</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - image: nginx:1.16</span><br><span class="line">        name: nginx</span><br></pre></td></tr></table></figure>
 
@@ -264,11 +264,11 @@
 
 <p>这个deployment就是一个Go template的模板，这里定义的Release模板对象属于Helm内置的一种对象，是从values文件中读取出来的。这样一来，我们可以将需要变化的地方都定义变量。</p>
 <p>再执行helm install chart 可以看到现在生成的名称变成了<strong>web-deployment</strong>，证明已经生效了。也可以使用命令helm get manifest查看最终生成的文件内容。</p>
-<h3 id="2、调试"><a href="#2、调试" class="headerlink" title="2、调试"></a>2、调试</h3><p>Helm也提供了<code>--dry-run --debug</code>调试参数，帮助你验证模板正确性。在执行<code>helm install</code>时候带上这两个参数就可以把对应的values值和渲染的资源清单打印出来，而不会真正的去部署一个release。</p>
+<h3 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h3><p>Helm也提供了<code>--dry-run --debug</code>调试参数，帮助你验证模板正确性。在执行<code>helm install</code>时候带上这两个参数就可以把对应的values值和渲染的资源清单打印出来，而不会真正的去部署一个release。</p>
 <p>比如我们来调试上面创建的 chart 包：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm install web2 --dry-run /root/mychart</span><br></pre></td></tr></table></figure>
 
-<h3 id="3、内置对象"><a href="#3、内置对象" class="headerlink" title="3、内置对象"></a>3、内置对象</h3><p>刚刚我们使用 <code>&#123;&#123;.Release.Name&#125;&#125;</code>将 release 的名称插入到模板中。这里的 Release 就是 Helm 的内置对象，下面是一些常用的内置对象：</p>
+<h3 id="内置对象"><a href="#内置对象" class="headerlink" title="内置对象"></a>内置对象</h3><p>刚刚我们使用 <code>&#123;&#123;.Release.Name&#125;&#125;</code>将 release 的名称插入到模板中。这里的 Release 就是 Helm 的内置对象，下面是一些常用的内置对象：</p>
 <table>
 <thead>
 <tr>
@@ -293,7 +293,7 @@
 <td>release 修订版本号，从1开始累加</td>
 </tr>
 </tbody></table>
-<h3 id="4、Values"><a href="#4、Values" class="headerlink" title="4、Values"></a>4、Values</h3><p>Values对象是为Chart模板提供值，这个对象的值有4个来源：</p>
+<h3 id="Values"><a href="#Values" class="headerlink" title="Values"></a>Values</h3><p>Values对象是为Chart模板提供值，这个对象的值有4个来源：</p>
 <ul>
 <li><p>chart 包中的 values.yaml 文件</p>
 </li>
@@ -317,7 +317,7 @@
 <p>查看渲染结果：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># helm install --dry-run web ../mychart/</span><br></pre></td></tr></table></figure>
 
-<h3 id="5、管道与函数"><a href="#5、管道与函数" class="headerlink" title="5、管道与函数"></a>5、管道与函数</h3><p>前面讲的模块，其实就是将值传给模板引擎进行渲染，模板引擎还支持对拿到数据进行二次处理。</p>
+<h3 id="管道与函数"><a href="#管道与函数" class="headerlink" title="管道与函数"></a>管道与函数</h3><p>前面讲的模块，其实就是将值传给模板引擎进行渲染，模板引擎还支持对拿到数据进行二次处理。</p>
 <p>例如从.Values中读取的值变成字符串，可以使用<code>quote</code>函数实现：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># vi templates/deployment.yaml</span><br><span class="line">app: &#123;&#123; quote .Values.label.app &#125;&#125;</span><br><span class="line"></span><br><span class="line"># helm install --dry-run web ../mychart/ </span><br><span class="line">        project: ms</span><br><span class="line">        app: &quot;nginx&quot;</span><br></pre></td></tr></table></figure>
 
@@ -332,7 +332,7 @@
 <p><strong>其他函数：</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">缩进：&#123;&#123; .Values.resources | indent 12 &#125;&#125;</span><br><span class="line"></span><br><span class="line">大写：&#123;&#123; upper .Values.resources &#125;&#125;</span><br><span class="line"></span><br><span class="line">首字母大写：&#123;&#123; title .Values.resources &#125;&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="6、流程控制"><a href="#6、流程控制" class="headerlink" title="6、流程控制"></a>6、流程控制</h3><p>流程控制是为模板提供了一种能力，满足更复杂的数据逻辑处理。</p>
+<h3 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h3><p>流程控制是为模板提供了一种能力，满足更复杂的数据逻辑处理。</p>
 <p>Helm模板语言提供以下流程控制语句：</p>
 <ul>
 <li><code>if/else</code> 条件块</li>
@@ -402,12 +402,12 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: ConfigMap</span><br><span class="line">metadata:</span><br><span class="line">  name: &#123;&#123; .Release.Name &#125;&#125;</span><br><span class="line">data:</span><br><span class="line">  test: |</span><br><span class="line">  &#123;&#123;- range .Values.test &#125;&#125;</span><br><span class="line">    &#123;&#123; . &#125;&#125;</span><br><span class="line">  &#123;&#123;- end &#125;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>循环内部我们使用的是一个 <code>.</code>，这是因为当前的作用域就在当前循环内，这个 <code>.</code>引用的当前读取的元素。</p>
-<h3 id="7、变量"><a href="#7、变量" class="headerlink" title="7、变量"></a>7、变量</h3><p>接下来学习一个语言中基本的概念：<strong>变量</strong>，在模板中，使用变量的场合不多，但我们将看到如何使用它来简化代码，并更好地利用with和range。</p>
+<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><p>接下来学习一个语言中基本的概念：<strong>变量</strong>，在模板中，使用变量的场合不多，但我们将看到如何使用它来简化代码，并更好地利用with和range。</p>
 <p><strong>问题1：获取列表键值</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># cat ../values.yaml</span><br><span class="line">env:</span><br><span class="line">  NAME: &quot;gateway&quot;</span><br><span class="line">  JAVA_OPTS: &quot;-Xmx1G&quot;</span><br><span class="line">  </span><br><span class="line"># cat deployment.yaml </span><br><span class="line">...</span><br><span class="line">		env:</span><br><span class="line">		&#123;&#123;- range $k, $v := .Values.env &#125;&#125;</span><br><span class="line">           - name: &#123;&#123; $k &#125;&#125;</span><br><span class="line">             value: &#123;&#123; $v | quote &#125;&#125;</span><br><span class="line">        &#123;&#123;- end &#125;&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># cat ../values.yaml</span><br><span class="line">env:</span><br><span class="line">  NAME: &quot;gateway&quot;</span><br><span class="line">  JAVA_OPTS: &quot;-Xmx1G&quot;</span><br><span class="line"> </span><br><span class="line"># cat deployment.yaml </span><br><span class="line">...</span><br><span class="line">env:</span><br><span class="line">&#123;&#123;- range $k, $v := .Values.env &#125;&#125;</span><br><span class="line">  - name: &#123;&#123; $k &#125;&#125;</span><br><span class="line">    value: &#123;&#123; $v | quote &#125;&#125;</span><br><span class="line">&#123;&#123;- end &#125;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>结果如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">env:</span><br><span class="line">   - name: JAVA_OPTS</span><br><span class="line">     value: &quot;-Xmx1G&quot;</span><br><span class="line">   - name: NAME</span><br><span class="line">     value: &quot;gateway&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">env:</span><br><span class="line">- name: JAVA_OPTS</span><br><span class="line">  value: &quot;-Xmx1G&quot;</span><br><span class="line">- name: NAME</span><br><span class="line">  value: &quot;gateway&quot;</span><br></pre></td></tr></table></figure>
 
 <p>上面在 <code>range</code>循环中使用 <code>$key</code>和 <code>$value</code>两个变量来接收后面列表循环的键和值<code>。</code></p>
 <p><strong>问题2：with中不能使用内置对象</strong></p>
@@ -419,14 +419,14 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;&#123;- $releaseName := .Release.Name -&#125;&#125;</span><br><span class="line">&#123;&#123;- with .Values.label &#125;&#125;</span><br><span class="line">  project: &#123;&#123; .project &#125;&#125;</span><br><span class="line">  app: &#123;&#123; .app &#125;&#125;</span><br><span class="line">  release: &#123;&#123; $releaseName &#125;&#125;</span><br><span class="line">  # 或者可以使用$符号,引入全局命名空间</span><br><span class="line">  release: &#123;&#123; $.Release.Name &#125;&#125;</span><br><span class="line">&#123;&#123;- end &#125;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>可以看到在 <code>with</code>语句上面增加了一句 <code>&#123;&#123;-$releaseName:=.Release.Name-&#125;&#125;</code>，其中 <code>$releaseName</code>就是后面的对象的一个引用变量，它的形式就是 <code>$name</code>，赋值操作使用 <code>:=</code>，这样 <code>with</code>语句块内部的 <code>$releaseName</code>变量仍然指向的是 <code>.Release.Name</code></p>
-<h3 id="8、命名模板"><a href="#8、命名模板" class="headerlink" title="8、命名模板"></a>8、命名模板</h3><p>命名模板：使用define定义，template引入，在templates目录中默认下划线_开头的文件为公共模板(_helpers.tpl)</p>
+<h3 id="命名模板"><a href="#命名模板" class="headerlink" title="命名模板"></a>命名模板</h3><p>命名模板：使用define定义，template引入，在templates目录中默认下划线_开头的文件为公共模板(_helpers.tpl)</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># cat _helpers.tpl</span><br><span class="line">&#123;&#123;- define &quot;demo.fullname&quot; -&#125;&#125;</span><br><span class="line">&#123;&#123;- .Chart.Name -&#125;&#125;-&#123;&#123; .Release.Name &#125;&#125;</span><br><span class="line">&#123;&#123;- end -&#125;&#125;</span><br><span class="line"></span><br><span class="line"># cat deployment.yaml </span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: &#123;&#123; template &quot;demo.fullname&quot; . &#125;&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <p>template指令是将一个模板包含在另一个模板中的方法。但是，template函数不能用于Go模板管道。为了解决该问题，增加include功能。</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># cat _helpers.tpl</span><br><span class="line">&#123;&#123;- define &quot;demo.labels&quot; -&#125;&#125;</span><br><span class="line">app: &#123;&#123; template &quot;demo.fullname&quot; . &#125;&#125;</span><br><span class="line">chart: &quot;&#123;&#123; .Chart.Name &#125;&#125;-&#123;&#123; .Chart.Version &#125;&#125;&quot;</span><br><span class="line">release: &quot;&#123;&#123; .Release.Name &#125;&#125;&quot;</span><br><span class="line">&#123;&#123;- end -&#125;&#125;</span><br><span class="line"></span><br><span class="line"># cat deployment.yaml </span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: &#123;&#123; include &quot;demo.fullname&quot; . &#125;&#125;</span><br><span class="line">  labels:</span><br><span class="line">    &#123;&#123;- include &quot;demo.labels&quot; . | nindent 4 &#125;&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
 <p>上面包含一个名为 <code>demo.labels</code> 的模板，然后将值 <code>.</code> 传递给模板，最后将该模板的输出传递给 <code>nindent</code> 函数。</p>
-<h2 id="七、-开发自己的Chart：Java应用为例"><a href="#七、-开发自己的Chart：Java应用为例" class="headerlink" title="七、 开发自己的Chart：Java应用为例"></a>七、 开发自己的Chart：Java应用为例</h2><ol>
+<h2 id="开发自己的Chart：Java应用为例"><a href="#开发自己的Chart：Java应用为例" class="headerlink" title="开发自己的Chart：Java应用为例"></a>开发自己的Chart：Java应用为例</h2><ol>
 <li><p>先创建模板</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">helm create demo</span><br></pre></td></tr></table></figure></li>
 <li><p>修改Chart.yaml，Values.yaml，添加常用的变量</p>
@@ -434,7 +434,7 @@
 <li><p>在templates目录下创建部署镜像所需要的yaml文件，并变量引用yaml里经常变动的字段</p>
 </li>
 </ol>
-<h2 id="八、-使用Harbor作为Chart仓库"><a href="#八、-使用Harbor作为Chart仓库" class="headerlink" title="八、 使用Harbor作为Chart仓库"></a>八、 使用Harbor作为Chart仓库</h2><p><strong>1、启用Harbor的Chart仓库服务</strong></p>
+<h2 id="使用Harbor作为Chart仓库"><a href="#使用Harbor作为Chart仓库" class="headerlink" title="使用Harbor作为Chart仓库"></a>使用Harbor作为Chart仓库</h2><p><strong>1、启用Harbor的Chart仓库服务</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># ./install.sh --with-chartmuseum</span><br></pre></td></tr></table></figure>
 
 <p>启用后，默认创建的项目就带有helm charts功能了。</p>

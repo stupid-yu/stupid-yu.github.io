@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>hexo-next-github</title>
+    <title>github pages &amp; hexo 搭建个人博客</title>
     <url>/2021/07/13/hexo-next-github/</url>
     <content><![CDATA[<p>本文仅作为个人 <a href="https://docs.github.com/en/pages"><code>github pages</code></a> 搭建 <a href="https://hexo.io/"><code>hexo</code></a> 博客记录，主题选择 <a href="https://theme-next.js.org/"><code>next</code></a>。</p>
 <h2 id="Github-Pages"><a href="#Github-Pages" class="headerlink" title="Github Pages"></a>Github Pages</h2><blockquote>

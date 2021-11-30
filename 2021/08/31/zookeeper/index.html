@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stupid-yu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"4VZM63UWRF","apiKey":"98a8dc33ac682bbdd7a212e3f0aba3a8","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ZooKeeper A Distributed Coordination Service for Distributed Applications  概述 ZooKeeper: Because Coordinating Distributed Systems is a Zoo  ZooKeeper 是分布式应用的分布式开源协调服务。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZooKeeper 简介">
+<meta property="og:url" content="https://stupid-yu.github.io/2021/08/31/zookeeper/index.html">
+<meta property="og:site_name" content="Yu&#39;s blog">
+<meta property="og:description" content="ZooKeeper A Distributed Coordination Service for Distributed Applications  概述 ZooKeeper: Because Coordinating Distributed Systems is a Zoo  ZooKeeper 是分布式应用的分布式开源协调服务。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/zkservice.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/zknamespace.jpg">
+<meta property="article:published_time" content="2021-08-31T07:15:58.000Z">
+<meta property="article:modified_time" content="2021-11-30T03:20:10.098Z">
+<meta property="article:author" content="于辉">
+<meta property="article:tag" content="zookeeper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/zkservice.jpg">
+
+<link rel="canonical" href="https://stupid-yu.github.io/2021/08/31/zookeeper/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ZooKeeper 简介 | Yu's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Yu's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学习 & 记录</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://stupid-yu.github.io/2021/08/31/zookeeper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="于辉">
+      <meta itemprop="description" content="蠢鱼蠢鱼，上班摸鱼">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yu's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ZooKeeper 简介
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-31 15:15:58" itemprop="dateCreated datePublished" datetime="2021-08-31T15:15:58+08:00">2021-08-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-30 11:20:10" itemprop="dateModified" datetime="2021-11-30T11:20:10+08:00">2021-11-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="ZooKeeper"><a href="#ZooKeeper" class="headerlink" title="ZooKeeper"></a>ZooKeeper</h1><blockquote>
+<p>A Distributed Coordination Service for Distributed Applications</p>
+</blockquote>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><blockquote>
+<p>ZooKeeper: Because Coordinating Distributed Systems is a Zoo</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://zookeeper.apache.org/">ZooKeeper</a> 是分布式应用的分布式开源协调服务。</p>
+<span id="more"></span>
+
+<h3 id="工作机制"><a href="#工作机制" class="headerlink" title="工作机制"></a>工作机制</h3><p>ZooKeeper 从设计模式的角度来理解：是一个基于观察者模式设计的分布式管理框架，它<em><strong>负责存储和管理大家都关心的数据</strong></em>，然后<em><strong>接受观察者的注册</strong></em>，一旦这些数据发生变化，ZooKeeper 就将<em><strong>负责通知已经在ZooKeeper上注册的那些观察者</strong></em>作出相应的反应。</p>
+<h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><p><img src="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/zkservice.jpg"></p>
+<blockquote>
+<p>Guarantees<br>ZooKeeper is very fast and very simple. Since its goal, though, is to be a basis for the construction of more complicated services, such as synchronization, it provides a set of guarantees. These are:</p>
+<ul>
+<li><p>Sequential Consistency - Updates from a client will be applied in the order that they were sent.</p>
+</li>
+<li><p>Atomicity - Updates either succeed or fail. No partial results.</p>
+</li>
+<li><p>Single System Image - A client will see the same view of the service regardless of the server that it connects to. i.e., a client will never see an older view of the system even if the client fails over to a different server with the same session.</p>
+</li>
+<li><p>Reliability - Once an update has been applied, it will persist from that time forward until a client overwrites the update.</p>
+</li>
+<li><p>Timeliness - The clients view of the system is guaranteed to be up-to-date within a certain time bound.</p>
+</li>
+</ul>
+</blockquote>
+<p>ZooKeeper： 一个 Leader,多个 Follower 组成的集群，集群中只要有半数以上节点存活，ZooKeeper 集群就能正常服务。所以 ZooKeeper 适合安装奇数台服务器。其特点总结如下：</p>
+<ul>
+<li>更新请求顺序执行，来自同一个 Client 的请求按其发送顺序依次执行。</li>
+<li>全局数据一致性：每个 Server 保存一份相同的数据副本，Client 无论连接到哪个 Server，数据都是一致的。</li>
+<li>数据更新原子性，一次数据更新要么成功，要么失败。</li>
+<li>可靠性，数据保存直到下次 Client 覆盖更新。</li>
+<li>实时性，在一定时间范围内，Client 能读到最新的数据。</li>
+</ul>
+<h2 id="Data-model-and-the-hierarchical-namespace"><a href="#Data-model-and-the-hierarchical-namespace" class="headerlink" title="Data model and the hierarchical namespace"></a>Data model and the hierarchical namespace</h2><blockquote>
+<p>The namespace provided by ZooKeeper is much like that of a standard file system. A name is a sequence of path elements separated by a slash (/). Every node in ZooKeeper’s namespace is identified by a path.</p>
+</blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/zknamespace.jpg"></p>
+<p>ZooKeeper 数据结构与 Unix 文件系统类似，整体上可以看作一棵树，每个节点称作一个 ZNode。每一个 ZNode 默认能够存储 <em><strong>1MB</strong></em> 的数据，每个 ZNode 都可以通过<em><strong>其路径唯一标识</strong></em>。</p>
+<h2 id="Simple-API"><a href="#Simple-API" class="headerlink" title="Simple API"></a>Simple API</h2><blockquote>
+<p>One of the design goals of ZooKeeper is providing a very simple programming interface. As a result, it supports only these operations:</p>
+</blockquote>
+<ul>
+<li>create : creates a node at a location in the tree</li>
+<li>delete : deletes a node</li>
+<li>exists : tests if a node exists at a location</li>
+<li>get data : reads the data from a node</li>
+<li>set data : writes data to a node</li>
+<li>get children : retrieves a list of children of a node</li>
+<li>sync : waits for data to be propagated </li>
+</ul>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><ul>
+<li>统一命名服务</li>
+<li>统一配置管理</li>
+<li>统一集群管理</li>
+<li>服务节点动态上下线</li>
+<li>软负载均衡</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>简言之，ZooKeeper = 文件系统 + 通知机制。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/zookeeper/" rel="tag"># zookeeper</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/27/oracle/" rel="prev" title="oracle">
+      <i class="fa fa-chevron-left"></i> oracle
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/09/02/zookeeper-install-standalone/" rel="next" title="ZooKeeper 本地模式安装">
+      ZooKeeper 本地模式安装 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper"><span class="nav-number">1.</span> <span class="nav-text">ZooKeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="nav-number">1.1.1.</span> <span class="nav-text">工作机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-model-and-the-hierarchical-namespace"><span class="nav-number">1.3.</span> <span class="nav-text">Data model and the hierarchical namespace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Simple-API"><span class="nav-number">1.4.</span> <span class="nav-text">Simple API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.5.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">于辉</p>
+  <div class="site-description" itemprop="description">蠢鱼蠢鱼，上班摸鱼</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">于辉</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

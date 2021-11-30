@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"stupid-yu.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"appID":"4VZM63UWRF","apiKey":"98a8dc33ac682bbdd7a212e3f0aba3a8","indexName":"blog","hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言所谓授权，一般是指对与信息安全或计算机安全相关的资源授予访问权限，特别是存取控制。 具体到权限模型，常见的有四种。  ACL：Access-Control List，访问控制列表。权限模型 RBAC：Role-Based Access Control，基于角色的权限控制。 ABAC：Attribute-Based Access Control，基于属性的权限控制。 PBAC：Policy-Ba">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka 授权机制">
+<meta property="og:url" content="https://stupid-yu.github.io/2021/11/29/kafka-authorization/index.html">
+<meta property="og:site_name" content="Yu&#39;s blog">
+<meta property="og:description" content="前言所谓授权，一般是指对与信息安全或计算机安全相关的资源授予访问权限，特别是存取控制。 具体到权限模型，常见的有四种。  ACL：Access-Control List，访问控制列表。权限模型 RBAC：Role-Based Access Control，基于角色的权限控制。 ABAC：Attribute-Based Access Control，基于属性的权限控制。 PBAC：Policy-Ba">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/kafka-acl.jpg">
+<meta property="article:published_time" content="2021-11-29T09:28:25.000Z">
+<meta property="article:modified_time" content="2021-11-30T03:29:01.144Z">
+<meta property="article:author" content="于辉">
+<meta property="article:tag" content="kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/kafka-acl.jpg">
+
+<link rel="canonical" href="https://stupid-yu.github.io/2021/11/29/kafka-authorization/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kafka 授权机制 | Yu's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Yu's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">学习 & 记录</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://stupid-yu.github.io/2021/11/29/kafka-authorization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="于辉">
+      <meta itemprop="description" content="蠢鱼蠢鱼，上班摸鱼">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Yu's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kafka 授权机制
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-29 17:28:25" itemprop="dateCreated datePublished" datetime="2021-11-29T17:28:25+08:00">2021-11-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-30 11:29:01" itemprop="dateModified" datetime="2021-11-30T11:29:01+08:00">2021-11-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/Messaging-System/" itemprop="url" rel="index"><span itemprop="name">Messaging System</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>所谓授权，一般是指对与信息安全或计算机安全相关的资源授予访问权限，特别是<strong>存取</strong>控制。</p>
+<p>具体到权限模型，常见的有四种。</p>
+<ul>
+<li>ACL：Access-Control List，访问控制列表。权限模型</li>
+<li>RBAC：Role-Based Access Control，基于角色的权限控制。</li>
+<li>ABAC：Attribute-Based Access Control，基于属性的权限控制。</li>
+<li>PBAC：Policy-Based Access Control，基于策略的权限控制。</li>
+</ul>
+<p>权限模型在典型的互联网场景中，前两种模型应用得多，后面这两种则比较少用。</p>
+<span id="more"></span>
+
+<h2 id="Kafka-授权机制"><a href="#Kafka-授权机制" class="headerlink" title="Kafka 授权机制"></a>Kafka 授权机制</h2><p>Kafka 没有使用 RBAC 模型，它用的是 ACL 模型。简单来说，这种模型就是规定了什么用户对什么资源有什么样的访问权限。</p>
+<blockquote>
+<p><strong>Principal P is [Allowed/Denied] Operation O From Host H On Resource R</strong></p>
+<ul>
+<li>Principal：表示访问 Kafka 集群的用户。</li>
+<li>Operation：表示一个具体的访问类型，如读写消息或创建主题等。</li>
+<li>Host：表示连接 Kafka 集群的客户端应用程序 IP 地址。Host 支持星号占位符，表示所有 IP 地址。</li>
+<li>Resource：表示 Kafka 资源类型。如果以2.3 版本为例，Resource 共有 5 种，分别是 TOPIC、CLUSTER、GROUP、TRANSACTIONALID 和 DELEGATION TOKEN。</li>
+</ul>
+</blockquote>
+<p>当前，Kafka 提供了一个可插拔的授权实现机制。该机制会将你配置的所有 ACL 项保存在 ZooKeeper 下的 /kafka-acl 节点中。你可以通过 Kafka 自带的 kafka-acls 脚本动态地对 ACL 项进行增删改查，并让它立即生效。</p>
+<h2 id="Kafka-ACL常用操作"><a href="#Kafka-ACL常用操作" class="headerlink" title="Kafka ACL常用操作"></a>Kafka ACL常用操作</h2><h3 id="配置-Broker-端-server-properties"><a href="#配置-Broker-端-server-properties" class="headerlink" title="配置 Broker 端 server.properties"></a>配置 Broker 端 <code>server.properties</code></h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer</span></span><br><span class="line"><span class="comment"># 设置ACL类(高于 2.4.0 版本推荐使用 AclAuthorizer)</span></span><br><span class="line"><span class="meta">authorizer.class.name</span>=<span class="string">kafka.security.authorizer.AclAuthorizer</span></span><br></pre></td></tr></table></figure>
+<h3 id="超级用户（Super-User）"><a href="#超级用户（Super-User）" class="headerlink" title="超级用户（Super User）"></a>超级用户（Super User）</h3><p>在开启了 ACL 授权之后，你还必须显式地为不同用户设置访问某项资源的权限，否则，在默认情况下，没有配置任何 ACL 的资源是不能被访问的。不过，这里也有一个例外：超级用户能够访问所有的资源，即使你没有为它们设置任何 ACL 项。</p>
+<p>在一个 Kafka 集群中设置超级用户，只需要在 Broker 端的配置文件 <code>server.properties</code> 中，设置 <code>super.users</code> 参数即可，比如：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分号分割</span></span><br><span class="line"><span class="meta">super.users</span>=<span class="string">User:superuser1;User:superuser2</span></span><br></pre></td></tr></table></figure>
+
+<p>除了设置 <code>super.users </code>参数，Kafka 还支持将所有用户都配置成超级用户的用法。如果我们在 <code>server.properties</code> 文件中设置 <code>allow.everyone.if.no.acl.found=true</code>，那么所有用户都可以访问没有设置任何 ACL 的资源。</p>
+<p>不过不太建议进行这样的设置。毕竟，在生产环境中，特别是在那些对安全有较高要求的环境中，采用白名单机制要比黑名单机制更加令人放心。</p>
+<h3 id="kafka-acls-脚本"><a href="#kafka-acls-脚本" class="headerlink" title="kafka-acls 脚本"></a>kafka-acls 脚本</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 为用户 Alice 增加了集群级别的所有权限</span></span><br><span class="line">[dev@hp102 kafka-2.4.1]$ bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:Alice --operation All --topic <span class="string">&#x27;*&#x27;</span> --cluster</span><br><span class="line"></span><br><span class="line"><span class="comment"># 允许所有的用户使用任意的 IP 地址读取名为 test-topic 的主题数据，同时也禁止 BadUser 用户和 10.205.96.119 的 IP 地址访问 test-topic 下的消息。</span></span><br><span class="line">[dev@hp102 kafka-2.4.1]$ bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:<span class="string">&#x27;*&#x27;</span> --allow-host <span class="string">&#x27;*&#x27;</span> --deny-principal User:BadUser --deny-host 10.205.96.119 --operation Read --topic test-topic</span><br></pre></td></tr></table></figure>
+
+<h3 id="授权机制能否单独使用"><a href="#授权机制能否单独使用" class="headerlink" title="授权机制能否单独使用"></a>授权机制能否单独使用</h3><p>关于授权，有一个很常见的问题是，Kafka 授权机制能不配置认证机制而单独使用吗？其实，这是可以的，只是你只能为 IP 地址设置权限。比如，下面这个命令会禁止运行在 127.0.0.1 IP 地址上的 Producer 应用向 test 主题发送数据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[dev@hp102 kafka-2.4.1]$ bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --deny-principal User:* --deny-host 127.0.0.1 --operation Write --topic <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="SSL-ACL-配置的实例"><a href="#SSL-ACL-配置的实例" class="headerlink" title="SSL + ACL 配置的实例"></a>SSL + ACL 配置的实例</h2><h3 id="SSL-配置"><a href="#SSL-配置" class="headerlink" title="SSL 配置"></a>SSL 配置</h3><blockquote>
+<p>SSL 配置参考 kafka 认证机制 ssl部分。</p>
+</blockquote>
+<h3 id="ACL-配置"><a href="#ACL-配置" class="headerlink" title="ACL 配置"></a>ACL 配置</h3><h4 id="开启-ACL"><a href="#开启-ACL" class="headerlink" title="开启 ACL"></a>开启 ACL</h4><p>配置 Broker 端 <code>server.properties</code></p>
+<p><code>bashauthorizer.class.name=kafka.security.auth.SimpleAclAuthorizer。</code></p>
+<h4 id="白名单机制"><a href="#白名单机制" class="headerlink" title="白名单机制"></a>白名单机制</h4><p>建议采用白名单机制，这样的话，没有显式设置权限的用户就无权访问任何资源。</p>
+<h4 id="授予-SSL-用户集群的权限"><a href="#授予-SSL-用户集群的权限" class="headerlink" title="授予 SSL 用户集群的权限"></a>授予 SSL 用户集群的权限</h4><p>使用 kafka-acls 脚本为 SSL 用户授予集群的权限，我们以前面的例子来进行一下说明。在配置 SSL 时，我们指定用户的 Distinguished Name 为 “CN=Hui Yu, OU=Bcdp, O=Bonc, L=Beijing, ST=Beijing, C=CN”。之前在设置 Broker 端参数时，我们指定了 <code>security.inter.broker.protocol=SSL</code>，即强制指定 Broker 间的通讯也采用 SSL 加密。如果不为指定的 Distinguished Name 授予集群操作的权限，你是无法成功启动 Broker 的。因此，你需要在启动 Broker 之前执行下面的命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[dev@hp102 kafka-2.4.1]$ bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:<span class="string">&quot;CN=Hui Yu,OU=Bcdp,O=Bonc,L=Beijing,ST=Beijing,C=CN&quot;</span> --operation All --cluster</span><br></pre></td></tr></table></figure>
+
+<h4 id="授予客户端程序相应的权限"><a href="#授予客户端程序相应的权限" class="headerlink" title="授予客户端程序相应的权限"></a>授予客户端程序相应的权限</h4><p>你要为客户端程序授予相应的权限，比如为生产者授予 producer 权限，为消费者授予 consumer 权限。假设客户端要访问的主题名字是 test，那么命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[dev@hp102 kafka-2.4.1]$ bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:<span class="string">&quot;CN=Hui Yu,OU=Bcdp,O=Bonc,L=Beijing,ST=Beijing,C=CN&quot;</span> --producer --topic <span class="built_in">test</span></span><br><span class="line"></span><br><span class="line">[dev@hp102 kafka-2.4.1]$ bin/kafka-acls.sh --authorizer-properties zookeeper.connect=localhost:2181 --add --allow-principal User:<span class="string">&quot;CN=Hui Yu,OU=Bcdp,O=Bonc,L=Beijing,ST=Beijing,C=CN&quot;</span> --consumer --topic <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p>最好不要把其他权限授予客户端，比如创建主题的权限。</p>
+</blockquote>
+<p>总之，你授予的权限越少，你的 Kafka 集群就越安全。</p>
+<h2 id="思考题"><a href="#思考题" class="headerlink" title="思考题"></a>思考题</h2><p>Q: 如果要让一个客户端能够查询消费者组的提交位移数据，你觉得应该授予它什么权限？</p>
+<p>A: 消费者端的TOPIC的WRITE权限 [源码规定]</p>
+<p>附:<br><img src="https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/kafka-acl.jpg" alt="img"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/kafka/" rel="tag"># kafka</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/29/kafka-authentication/" rel="prev" title="Kafka 认证机制">
+      <i class="fa fa-chevron-left"></i> Kafka 认证机制
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/29/kafka-intro/" rel="next" title="kafka 简介">
+      kafka 简介 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6"><span class="nav-number">2.</span> <span class="nav-text">Kafka 授权机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-ACL%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">Kafka ACL常用操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-Broker-%E7%AB%AF-server-properties"><span class="nav-number">3.1.</span> <span class="nav-text">配置 Broker 端 server.properties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%EF%BC%88Super-User%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">超级用户（Super User）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kafka-acls-%E8%84%9A%E6%9C%AC"><span class="nav-number">3.3.</span> <span class="nav-text">kafka-acls 脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6%E8%83%BD%E5%90%A6%E5%8D%95%E7%8B%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">3.4.</span> <span class="nav-text">授权机制能否单独使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSL-ACL-%E9%85%8D%E7%BD%AE%E7%9A%84%E5%AE%9E%E4%BE%8B"><span class="nav-number">4.</span> <span class="nav-text">SSL + ACL 配置的实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL-%E9%85%8D%E7%BD%AE"><span class="nav-number">4.1.</span> <span class="nav-text">SSL 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ACL-%E9%85%8D%E7%BD%AE"><span class="nav-number">4.2.</span> <span class="nav-text">ACL 配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E5%90%AF-ACL"><span class="nav-number">4.2.1.</span> <span class="nav-text">开启 ACL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%99%BD%E5%90%8D%E5%8D%95%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.2.</span> <span class="nav-text">白名单机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%88%E4%BA%88-SSL-%E7%94%A8%E6%88%B7%E9%9B%86%E7%BE%A4%E7%9A%84%E6%9D%83%E9%99%90"><span class="nav-number">4.2.3.</span> <span class="nav-text">授予 SSL 用户集群的权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%88%E4%BA%88%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%A8%8B%E5%BA%8F%E7%9B%B8%E5%BA%94%E7%9A%84%E6%9D%83%E9%99%90"><span class="nav-number">4.2.4.</span> <span class="nav-text">授予客户端程序相应的权限</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%80%83%E9%A2%98"><span class="nav-number">6.</span> <span class="nav-text">思考题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">于辉</p>
+  <div class="site-description" itemprop="description">蠢鱼蠢鱼，上班摸鱼</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">于辉</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

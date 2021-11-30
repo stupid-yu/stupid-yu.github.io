@@ -7,7 +7,7 @@ title: Yu's blog
 subtitle: '学习 & 记录'
 description: '蠢鱼蠢鱼，上班摸鱼'
 keywords: 
-author: 于辉
+author: Yu Hui
 language: zh-CN
 timezone: 'Asia/Shanghai'
 
@@ -106,6 +106,8 @@ deploy:
   repo: git@github.com:stupid-yu/stupid-yu.github.io.git
   branch: master
 
+# Algolia Search
+# For more information: https://www.algolia.com
 algolia:
   applicationID: "4VZM63UWRF"
   apiKey: "98a8dc33ac682bbdd7a212e3f0aba3a8"

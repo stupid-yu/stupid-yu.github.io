@@ -3,8 +3,8 @@ title: Kafka 认证机制
 date: 2021-11-29 17:15:38
 tags: kafka
 categories: 
-  - 分布式
-  - Messaging System
+  - [分布式]
+  - [Messaging System, Kafka]
 ---
 
 ## 前言

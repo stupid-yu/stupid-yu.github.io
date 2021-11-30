@@ -3,8 +3,8 @@ title: Kafka 授权机制
 date: 2021-11-29 17:28:25
 tags: kafka
 categories: 
-  - 分布式
-  - Messaging System
+  - [分布式]
+  - [Messaging System, Kafka]
 ---
 ## 前言
 

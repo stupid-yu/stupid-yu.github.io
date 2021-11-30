@@ -17,7 +17,7 @@ categories: 分布式
 
 [ZooKeeper-3.5.6](http://archive.apache.org/dist/zookeeper/zookeeper-3.5.6/apache-zookeeper-3.5.6-bin.tar.gz)
 
-![](https://cdn.jsdelivr.net/gh/stupid-yu/cdn/img/md/zookeeper-3.5.6.png)
+![](https://cdn.jsdelivr.net/gh/stupid-yu/cdn/img/zookeeper-3.5.6.png)
 
 <!--more-->
 
@@ -136,7 +136,6 @@ clientPort=2181
 |syncLimit    | 5 心跳数      |LF同步通信时限                         |
 |dataDir      | /tmp/zookeeper|保存ZooKeeper中的数据，一般不用默认    |
 |clientPort   | 2181          | 客户端连接端口，通常不做修改          |
-
 
 
 

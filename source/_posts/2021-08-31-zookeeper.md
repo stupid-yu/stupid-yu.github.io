@@ -22,7 +22,7 @@ ZooKeeper 从设计模式的角度来理解：是一个基于观察者模式设�
 
 ## 特点
 
-![](https://zookeeper.apache.org/doc/current/images/zkservice.jpg)
+![](https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/zkservice.jpg)
 
 > Guarantees
 ZooKeeper is very fast and very simple. Since its goal, though, is to be a basis for the construction of more complicated services, such as synchronization, it provides a set of guarantees. These are:
@@ -48,7 +48,7 @@ ZooKeeper： 一个 Leader,多个 Follower 组成的集群，集群中只要有�
 
 > The namespace provided by ZooKeeper is much like that of a standard file system. A name is a sequence of path elements separated by a slash (/). Every node in ZooKeeper's namespace is identified by a path.
 
-![](https://zookeeper.apache.org/doc/current/images/zknamespace.jpg)
+![](https://cdn.jsdelivr.net/gh/stupid-yu/CDN/img/zknamespace.jpg)
 
 ZooKeeper 数据结构与 Unix 文件系统类似，整体上可以看作一棵树，每个节点称作一个 ZNode。每一个 ZNode 默认能够存储 ***1MB*** 的数据，每个 ZNode 都可以通过***其路径唯一标识***。
 

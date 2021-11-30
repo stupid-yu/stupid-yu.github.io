@@ -25,5 +25,17 @@
     "hexo-renderer-stylus": "^2.0.0",
     "hexo-server": "^2.0.0",
     "hexo-theme-landscape": "^0.0.3"
-  }
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stupid-yu/stupid-yu.github.io.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stupid-yu/stupid-yu.github.io/issues"
+  },
+  "homepage": "https://github.com/stupid-yu/stupid-yu.github.io#readme",
+  "description": ""
 }

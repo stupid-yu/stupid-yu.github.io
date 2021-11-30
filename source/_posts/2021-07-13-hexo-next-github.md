@@ -5,7 +5,7 @@ tags:
   - hexo
   - next
   - github
-categories: hexo
+categories: blog
 update: 2021-07-17 
 ---
 本文仅作为个人 [`github pages`](https://docs.github.com/en/pages) 搭建 [`hexo`](https://hexo.io/) 博客记录，主题选择 [`next`](https://theme-next.js.org/)。

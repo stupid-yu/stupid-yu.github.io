@@ -811,6 +811,7 @@
       <categories>
         <category>分布式</category>
         <category>Messaging System</category>
+        <category>Kafka</category>
       </categories>
       <tags>
         <tag>kafka</tag>
@@ -876,6 +877,7 @@
       <categories>
         <category>分布式</category>
         <category>Messaging System</category>
+        <category>Kafka</category>
       </categories>
       <tags>
         <tag>kafka</tag>
@@ -900,32 +902,32 @@
 <p>Q: why 消息引擎 ?</p>
 <p>A: 削峰填谷</p>
 </blockquote>
-<h3 id="Kafka-高可用"><a href="#Kafka-高可用" class="headerlink" title="Kafka 高可用"></a>Kafka 高可用</h3><ul>
+<h1 id="Kafka-高可用"><a href="#Kafka-高可用" class="headerlink" title="Kafka 高可用"></a>Kafka 高可用</h1><ul>
 <li>不同 Broker 分散运行在多个机器上</li>
 <li>副本机制，相同的数据拷贝到多台机器上 </li>
 </ul>
-<h3 id="Kafka-副本机制"><a href="#Kafka-副本机制" class="headerlink" title="Kafka 副本机制"></a>Kafka 副本机制</h3><ul>
+<h1 id="Kafka-副本机制"><a href="#Kafka-副本机制" class="headerlink" title="Kafka 副本机制"></a>Kafka 副本机制</h1><ul>
 <li>Kafka 定义了两类副本：领导者副本（Leader Replica）和追随者副本（Follower Replica）</li>
 <li>Producer 总是向 Leader Replica 写消息；而 Consumer 总是从 Leader Replica 读消息。</li>
 <li>Follower Replica，它只做一件事：向 Leader Replica 发送请求，请求Leader把最新生产的消息发给它（异步消息拉取），保持与 Leader 的同步 。</li>
 </ul>
-<h3 id="Kafka-伸缩性"><a href="#Kafka-伸缩性" class="headerlink" title="Kafka 伸缩性"></a>Kafka 伸缩性</h3><blockquote>
+<h1 id="Kafka-伸缩性"><a href="#Kafka-伸缩性" class="headerlink" title="Kafka 伸缩性"></a>Kafka 伸缩性</h1><blockquote>
 <p>副本机制可以保证数据的持久化或消息不丢失，但没有解决伸缩性的问题。</p>
 <p>什么是伸缩性呢？我们拿副本来说，虽然现在有了领导者副本和追随者副本，但倘若领导者副本积累了太多的数据以至于单台 Broker 机器都无法容纳了，此时应该怎么办呢？</p>
 </blockquote>
-<h3 id="Kafka-分区机制"><a href="#Kafka-分区机制" class="headerlink" title="Kafka 分区机制"></a>Kafka 分区机制</h3><ul>
+<h1 id="Kafka-分区机制"><a href="#Kafka-分区机制" class="headerlink" title="Kafka 分区机制"></a>Kafka 分区机制</h1><ul>
 <li>每个主题划分成多个分区（Partition），每个分区是一组<strong>有序</strong>的消息日志。</li>
 <li>生产者生产的每条消息只会被发送到一个分区中，也就是说如果向一个双分区的主题发送一条消息，这条消息要么在分区 0 中，要么在分区 1 中。</li>
 <li>分区编号是从 0 开始的，如果 Topic 有 100 个分区，那么它们的分区号就是从 0 到 99。</li>
 <li>生产者向分区写入消息，每条消息在分区中的位置信息由一个叫位移 Offset的数据来表征。分区位移总是从 0 开始，假设一个生产者向一个空分区写入了 10 条消息，那么这 10 条消息的位移依次是 0、1、2、……、9（消息表征分区内的消息位置，它是不变的，即一旦消息被成功写入到一个分区上，它的位移值就是固定的了）。</li>
 </ul>
-<h3 id="Kafka-三层消息架构"><a href="#Kafka-三层消息架构" class="headerlink" title="Kafka 三层消息架构"></a>Kafka 三层消息架构</h3><ul>
+<h1 id="Kafka-三层消息架构"><a href="#Kafka-三层消息架构" class="headerlink" title="Kafka 三层消息架构"></a>Kafka 三层消息架构</h1><ul>
 <li>第一层是主题层，每个主题可以配置 M 个分区，而每个分区又可以配置 N 个副本。</li>
 <li>第二层是分区层，每个分区的 N 个副本中只能有一个充当领导者角色，对外提供服务；其他 N-1 个副本是追随者副本，只是提供数据冗余之用。</li>
 <li>第三层是消息层，分区中包含若干条消息，每条消息的位移从 0 开始，依次递增。</li>
 <li>最后，客户端程序只能与分区的领导者副本进行交互。</li>
 </ul>
-<h3 id="由消息层-gt-Kafka-Broker-持久化数据"><a href="#由消息层-gt-Kafka-Broker-持久化数据" class="headerlink" title="由消息层 =&gt; Kafka Broker 持久化数据"></a>由消息层 =&gt; Kafka Broker 持久化数据</h3><blockquote>
+<h1 id="由消息层-gt-Kafka-Broker-持久化数据"><a href="#由消息层-gt-Kafka-Broker-持久化数据" class="headerlink" title="由消息层 =&gt; Kafka Broker 持久化数据"></a>由消息层 =&gt; Kafka Broker 持久化数据</h1><blockquote>
 <p>性能较好的顺序 I/O 写操作 [<strong>追加写入</strong>] ，避免了缓慢的随机 I/O 操作，是实现 Kafka 高吞吐量特性的一个重要手段。</p>
 </blockquote>
 <ul>
@@ -936,7 +938,7 @@
 <li><p>Kafka 在后台还有定时任务会定期地检查老的日志段是否能够被删除，从而实现回收磁盘空间的目的。</p>
 </li>
 </ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><blockquote>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><blockquote>
 <p>Producer 和 Consumer 都是 Kafka 系统的 Clients</p>
 </blockquote>
 <ul>
@@ -951,11 +953,17 @@
 <li>消费者组：Consumer Group。多个消费者实例共同组成的一个组，同时消费多个分区以实现高吞吐。</li>
 <li>重平衡：Rebalance。消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。</li>
 </ul>
-<h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><blockquote>
+<p><img src="https://cdn.jsdelivr.net/gh/stupid-yu/cdn/img/kafka-arch.png"></p>
+<h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><blockquote>
 <p>Kafka 不像 MySQL 那样允许追随者副本对外提供读服务？</p>
 <p><a href="https://www.zhihu.com/question/327925275/answer/705690755">https://www.zhihu.com/question/327925275/answer/705690755</a></p>
 </blockquote>
 ]]></content>
+      <categories>
+        <category>分布式</category>
+        <category>Messaging System</category>
+        <category>Kafka</category>
+      </categories>
       <tags>
         <tag>kafka</tag>
       </tags>
